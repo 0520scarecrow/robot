@@ -3,9 +3,15 @@ module.default = {
   lintOnSave: false,
   //代理跨域
   devServer: {
+    open: true,
     proxy: {
-      "/api": {
-        //    target: 'http://39.98.123.211',
+      "/foo": {
+        target: "http://ai-svc-test.yoyi.com.cn/",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/foo": "",
+        },
       },
     },
   },
