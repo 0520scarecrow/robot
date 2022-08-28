@@ -20,7 +20,9 @@
               <el-input
                 v-model="item.message"
                 readonly
-                style="float: right; display: block; width: 400px"
+                type="textarea"
+                :autosize="{ minRows: 1 }"
+                style="float: right; display: block; width: 400px; resize: none"
               ></el-input>
             </div>
             <div
@@ -31,6 +33,8 @@
               <el-input
                 v-model="item.message"
                 readonly
+                :autosize="{ minRows: 1 }"
+                type="textarea"
                 style="
                   float: right;
                   display: block;
@@ -71,12 +75,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      questionList: [
-        { id: 1, message: "hello" },
-        { id: 2, message: "Hi~ 小易在呢, 请描述您的问题~" },
-        { id: 1, message: "hello" },
-        { id: 2, message: "Hi~ 小易在呢, 请描述您的问题~" },
-      ],
+      questionList: [],
       textarea: "",
     };
   },
@@ -89,24 +88,12 @@ export default {
     send() {
       this.questionList.push({
         id: "1",
-        message: this.textarea,
+        message: this.textarea.trim(),
       });
-      var div = document.getElementById("messageArea");
-      this.$nextTick(() => {
-        this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
-      });
-      console.log(
-        this.$refs.messageArea.scrollTop,
-        div.scrollHeight,
-        "div-----------"
-      );
-      // div.scrollTop = div.scrollHeight + '20px'
-      console.log(div.scrollTop, div.scrollHeight, "div-----------");
-
-      // 发起请求
-      // axios('http://ai-svc-test.yoyi.com.cn/api/task/v1/robot/chat', {"robot_id": 10, "query": this.textarea, "threshold": 0.7, "uniq_id":12}).then(res => {
-      //   console.log(res, 'res----------')
-      // })
+      // var div = document.getElementById("messageArea");
+      // this.$nextTick(() => {
+      //   this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
+      // });
       axios({
         method: "post",
         url: "/foo/api/task/v1/robot/chat",
@@ -118,6 +105,13 @@ export default {
         },
       }).then((res) => {
         console.log(res, "res----------");
+        this.questionList.push({
+          id: "2",
+          message: res.data.result.top3[0].say,
+        });
+      });
+      this.$nextTick(() => {
+        this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
       });
       this.textarea = "";
     },
